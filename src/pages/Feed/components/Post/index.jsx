@@ -89,7 +89,7 @@ export default function Feed() {
           </View>
         </View>
       </View>
-    </View >
+    </View>
   )
 }
 
