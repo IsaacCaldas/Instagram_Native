@@ -3,7 +3,6 @@ import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native'
 
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Entypo from 'react-native-vector-icons/Entypo';
 
 export default function Feed() {
 

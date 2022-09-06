@@ -1,28 +1,42 @@
 import { useState, useEffect } from 'react'
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Text, Image, TouchableOpacity, FlatList } from 'react-native'
 
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Entypo from 'react-native-vector-icons/Entypo';
+import AntDesign from 'react-native-vector-icons/AntDesign'
+import Ionicons from 'react-native-vector-icons/Ionicons'
+import Entypo from 'react-native-vector-icons/Entypo'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
-export default function Feed() {
+export default function Post({ data }) {
 
   const [principalCommentFormated, setFormatedComment] = useState('')
+  const [commentFormated, setCommentFormated] = useState('')
+  const [handleCommentFormat, setHandleCommentFormat] = useState(true)
   const [likedPost, setLikedPost] = useState(false)
 
-  let comment = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras id ligula imperdiet, pulvinar ligula sit amet, pulvinar nisl. Proin eleifend ultricies massa ut cursus. Maecenas aliquam tortor lacus, rhoncus ullamcorper neque eleifend hendrerit. Vestibulum feugiat lobortis placerat. Sed dui magna, mattis in tristique molestie, vehicula ac orci. Sed fermentum dui ut tincidunt lobortis. Vivamus interdum leo felis, vitae efficitur mauris facilisis non.'
-
-  const users = [
-    { id: 0, name: 'isaac_caldas' },
-    { id: 1, name: 'john_doe' },
-    { id: 2, name: 'fulano.de.tal' },
-  ]
+  useEffect(() => {
+    let comment = data?.author_comment
+    console.log(comment)
+    comment = comment.split('').splice(0, 85)
+    console.log(comment)
+    comment.push('...')
+    console.log(comment)
+    setCommentFormated(comment.join(''))
+    handleFormat()
+  }, [])
 
   useEffect(() => {
-    let comment_to_format = comment.split('').splice(0, 85)
-    comment_to_format.push('...')
-    setFormatedComment(comment_to_format.join(''))
-  }, [])
+    handleFormat()
+  }, [handleCommentFormat])
+
+  function handleFormat() {
+    if (handleCommentFormat) {
+      console.log(commentFormated)
+      setCommentFormated(commentFormated)
+    } else {
+      console.log(data.author_comment)
+      setFormatedComment(data.author_comment)
+    }
+  }
 
   return (
     <View style={styles.box}>
@@ -31,23 +45,23 @@ export default function Feed() {
           <View style={styles.authorPhotoBorder}>
             <Image
               resizeMode="cover"
-              source={{ uri: 'https://cdn.abcdoabc.com.br/PewDiePie_c5a3e719.jpg' }}
+              source={{ uri: data.author_img }}
               style={styles.authorPhotoArea}
             />
           </View>
-          <Text style={styles.authorName}>{users[0].name}</Text>
+          <View style={styles.authorNameArea}>
+            <Text style={styles.authorName}>{data.author}</Text>
+            {data.verified && <MaterialIcons name='verified' size={16} color='#4a64aa' />}
+          </View>
         </View>
         <TouchableOpacity>
-          <Entypo
-            name='dots-three-horizontal'
-            size={16} color='#111'
-          />
+          <Entypo name='dots-three-horizontal' size={16} />
         </TouchableOpacity>
       </View>
       <View style={{ width: '100%', height: 400 }}>
         <Image
           resizeMode="cover"
-          source={{ uri: 'https://s2.glbimg.com/XO0RqOfPoqlUe9WlwYNVBlNJI3k=/e.glbimg.com/og/ed/f/original/2019/08/14/1024px-star_world_mountain_-_beto_carrero_world_1.jpg' }}
+          source={{ uri: data.post_img }}
           style={styles.postImage}
         />
       </View>
@@ -68,19 +82,19 @@ export default function Feed() {
       </View>
       <View style={styles.commentsArea}>
         <Text style={styles.authorComment}>
-          <Text style={styles.authorName}>{users[0].name}</Text> {principalCommentFormated}
-          <TouchableOpacity>
-            <Text style={[styles.smallText, { marginTop: 0 }]}>  more</Text>
+          <Text style={styles.authorName}>{data.author}</Text> {principalCommentFormated}
+          <TouchableOpacity onPress={() => setHandleCommentFormat(!handleCommentFormat)}>
+            <Text style={[styles.smallText, { marginTop: 0 }]}>  {handleCommentFormat ? 'more' : 'less'}</Text>
           </TouchableOpacity>
         </Text>
         <TouchableOpacity>
-          <Text style={styles.smallText}>View all 99 comments</Text>
+          <Text style={styles.smallText}>View all {data.comments_counter} comments</Text>
         </TouchableOpacity>
         <View>
           <View style={styles.addNewCommentArea}>
             <Image
               resizeMode="cover"
-              source={{ uri: 'https://cdn.abcdoabc.com.br/PewDiePie_c5a3e719.jpg' }}
+              source={{ uri: data.author_img }}
               style={styles.authorPhotoCommentArea}
             />
             <TouchableOpacity>
@@ -95,7 +109,8 @@ export default function Feed() {
 
 const styles = StyleSheet.create({
   box: {
-    width: '100%'
+    width: '100%',
+    marginVertical: 5
   },
   postHeader: {
     width: '100%',
@@ -115,7 +130,7 @@ const styles = StyleSheet.create({
   authorPhotoBorder: {
     width: 44,
     height: 44,
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: '#a33573',
     borderRadius: 22,
     backgroundColor: '#eeeeee',
@@ -123,19 +138,26 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   authorPhotoArea: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: '#a33573'
   },
   authorPhoto: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+  },
+  authorNameArea: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    width: '200%'
   },
   authorName: {
     fontWeight: 'bold',
-    marginLeft: 10
+    marginLeft: 10,
+    marginRight: 3
   },
   postImage: {
     width: '100%',
