@@ -1,34 +1,34 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native'
 import { Gravatar } from 'react-native-gravatar'
 
+import { AuthContext } from '../../context/auth'
 import Sign from '../Auth/sign'
 
 export default function Profile() {
+  const { signed, signOut, user } = useContext(AuthContext)
 
-  const [hasAuthenticated, setAuth] = useState(true)
+  const logout = async () => signOut()
 
-  const logout = async () => {
-    Alert.alert('You sign out')
-  }
+  console.log(user)
 
   return (
     <>
-      { hasAuthenticated ?
+      { signed ?
         <View style={styles.box}>
           <View style={styles.profileArea}>
             <View style={styles.userArea}>
               <Gravatar
                 options={{
-                  email: 'isaaccaldasgoncalves@gmail.com',
+                  email: user.email,
                   parameters: { "size": "200", "d": "mm" },
                   secure: true
                 }}
                 style={styles.roundedProfileImage}
               />
               <View>
-                <Text style={styles.name}>John Doe</Text>
-                <Text style={styles.email}>john.doe@who.com</Text>
+                <Text style={styles.name}>{user.name}</Text>
+                <Text style={styles.email}>{user.email}</Text>
               </View>
             </View>
             <TouchableOpacity onPress={() => logout()} style={[styles.btnLogout, { width: 100 }]}>

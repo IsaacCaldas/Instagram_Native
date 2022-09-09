@@ -1,114 +1,94 @@
-import { useState, useEffect } from 'react'
-import { StyleSheet, View, Text, TouchableOpacity, Alert, TextInput } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
+import { useState, useEffect, useContext } from 'react'
+import { StyleSheet, View, Text, TouchableOpacity, TextInput } from 'react-native'
 
-import firebase from '../../utils/firebase_conn'
+import { AuthContext } from '../../context/auth'
+import { inform } from '../../utils/inform'
+
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 
 export default function Sign() {
-  const navigation = useNavigation()
-  const [isLogin, setSignType] = useState(true)
+
+  const { signed, signIn, signUp, isLogin, setSignType } = useContext(AuthContext)
+
+  const [checked, setChecked] = useState(false)
+  const [checkBoxColor, setCheckBoxColor] = useState('none')
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [password_confirmation, setConfirmation] = useState('')
+  const [password_confirmation, setPasswordConfirmation] = useState('')
+
+  useEffect(() => {
+    checked ? setCheckBoxColor('#a33573') : setCheckBoxColor('none')
+  }, [checked])
+
+  useEffect(() => {
+    signed && cleanLabels()
+  }, [signed])
 
   const hasEmptyLabel = () => {
-    let labels = [email, password]
-    let hasEmpty = false
-    if (!isLogin) labels.push(name, password_confirmation)
+    let labels = [email.trim(), password.trim()]
+    if (!isLogin) labels.push(name.trim(), password_confirmation.trim())
 
     if (labels.includes("")) {
-      hasEmpty = true
-      return hasEmpty 
-    } 
+      return true
+    }
     else {
-      return hasEmpty
+      return false
     }
   }
 
   const passwordsNotEquals = () => password !== password_confirmation ? true : false
 
   function handleSign() {
-    if (hasEmptyLabel) {
-      Alert.alert('Fill all fields')
+    if (hasEmptyLabel()) {
+      inform('Fill all fields')
       return
     }
-    if (passwordsNotEquals) {
-      Alert.alert('Passwords not equals')
+    if (!isLogin && passwordsNotEquals()) {
+      inform('Passwords not equals')
       return
     }
 
-    navigation.navigate('Feed') 
-    
-    isLogin ? signIn() : signUp()
+    if (isLogin) {
+      signIn(email, password, checked)
+    }
+    else {
+      let user_created = signUp(name, email, password)
+      user_created && cleanLabels()
+    }
   }
 
-  async function signIn() {
-    console.log('Oi')
-  }
-
-  async function signUp() {
-    await firebase.auth().createUserWithEmailAndPassword(email, password)
-    .then((value) => {
-      
-      firebase.database().ref('users').child(value.user.uid).set({
-        name: name,
-        email: email
-      })
-
-      alert(`${value.user.email} is successfully registered`)
-      setName('')
-      setEmail('')
-      setPassword('')
-      setPasswordConfirmation('')
-      setIsNewUser(false)
-      setLoad(false)
-
-    }).catch((error) => {
-      
-      if (error.code === 'auth/email-already-in-use') {
-        alert('Email already in use')
-        setEmail('')
-        setLoad(false)
-        return
-      }
-      else if (error.code === 'auth/invalid-email') {
-        invalidEmail()
-        return
-      }
-      else if (error.code === 'auth/weak-password') {
-        alert('Password is weak, needs to be at least 6 characters');
-        setPassword('')
-        setLoad(false)
-        return
-      }
-      else {
-        serverError();
-      }
-    });
+  function cleanLabels() {
+    setName('')
+    setEmail('')
+    setPassword('')
+    setPasswordConfirmation('')
   }
 
   return (
     <View style={styles.box}>
-      <Text style={styles.title}>{isLogin ? 'SignIn' : 'SignUp'}</Text>
+      <View style={styles.titleArea}>
+        <Text style={styles.title}>{isLogin ? 'SignIn' : 'SignUp'}</Text>
+      </View>
       {!isLogin &&
         <TextInput
           style={styles.input}
-          onChangeText={(text) => setName(text.trim())}
+          onChangeText={text => setName(text)}
           value={name}
           placeholder="Enter your name"
         />
       }
       <TextInput
         style={styles.input}
-        onChangeText={(text) => setEmail(text.trim())}
+        onChangeText={text => setEmail(text)}
         value={email}
         placeholder="Enter your email"
+        keyboardType='email-address'
       />
       <TextInput
         style={styles.input}
-        onChangeText={(text) => setPassword(text.trim())}
+        onChangeText={text => setPassword(text)}
         value={password}
         secureTextEntry={true}
         placeholder="Enter your password"
@@ -116,15 +96,31 @@ export default function Sign() {
       {!isLogin &&
         <TextInput
           style={styles.input}
-          onChangeText={(text) => setConfirmation(text.trim())}
+          onChangeText={text => setPasswordConfirmation(text)}
           value={password_confirmation}
           secureTextEntry={true}
           placeholder="Confirm your password"
         />
       }
+      {isLogin &&
+        <View style={styles.rememberArea}>
+          <TouchableOpacity style={[styles.checkbox, {
+            borderColor: '#a33573', backgroundColor: checkBoxColor
+          }]} onPress={() => setChecked(!checked)}>
+            {checked && <FontAwesome name='check' size={16} color='#fff' />}
+          </TouchableOpacity>
+          <Text style={styles.rememberAreaText}>Remember me</Text>
+        </View>
+      }
       <TouchableOpacity style={styles.btnSign} onPress={() => handleSign()}>
         <Text style={styles.btnText}>{isLogin ? 'SignIn' : 'SignUp'}</Text>
       </TouchableOpacity>
+      <Text style={styles.rememberAreaText}>
+        {isLogin ? "You don't have an account?" : 'You have an account?'}
+        <TouchableOpacity onPress={() => setSignType(!isLogin)}>
+          <Text style={styles.signBtnText}>{isLogin ? 'Sign Up' : 'Sign In'}</Text>
+        </TouchableOpacity>
+      </Text>
     </View>
   )
 }
@@ -133,6 +129,9 @@ const styles = StyleSheet.create({
   box: {
     width: '100%',
     padding: 30,
+    justifyContent: 'center',
+  },
+  titleArea: {
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -165,4 +164,29 @@ const styles = StyleSheet.create({
     padding: 0,
     marginVertical: 10
   },
+  rememberArea: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: 15
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  rememberAreaText: {
+    marginLeft: 5,
+    fontSize: 16
+  },
+  signBtnText: {
+    fontSize: 16,
+    color: '#a33573',
+    fontWeight: 'bold',
+    top: 3,
+    marginLeft: 5
+  }
 })
