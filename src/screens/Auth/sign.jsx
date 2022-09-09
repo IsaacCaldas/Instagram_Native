@@ -14,6 +14,7 @@ export default function Sign() {
   const [checkBoxColor, setCheckBoxColor] = useState('none')
 
   const [name, setName] = useState('')
+  const [nickname, setNickName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [password_confirmation, setPasswordConfirmation] = useState('')
@@ -28,7 +29,7 @@ export default function Sign() {
 
   const hasEmptyLabel = () => {
     let labels = [email.trim(), password.trim()]
-    if (!isLogin) labels.push(name.trim(), password_confirmation.trim())
+    if (!isLogin) labels.push(name.trim(), nickname.trim(), password_confirmation.trim())
 
     if (labels.includes("")) {
       return true
@@ -54,13 +55,14 @@ export default function Sign() {
       signIn(email, password, checked)
     }
     else {
-      let user_created = signUp(name, email, password)
+      let user_created = signUp(name, nickname, email, password)
       user_created && cleanLabels()
     }
   }
 
   function cleanLabels() {
     setName('')
+    setNickName('')
     setEmail('')
     setPassword('')
     setPasswordConfirmation('')
@@ -77,6 +79,14 @@ export default function Sign() {
           onChangeText={text => setName(text)}
           value={name}
           placeholder="Enter your name"
+        />
+      }
+      {!isLogin &&
+        <TextInput
+          style={styles.input}
+          onChangeText={text => setNickName(text)}
+          value={nickname}
+          placeholder="Enter your nickname"
         />
       }
       <TextInput

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { StyleSheet, View, Text, Image, TouchableOpacity, FlatList, TextInput } from 'react-native'
+import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput } from 'react-native'
 
 export default function CommentsArea({
   principalComment, handleFormat, setCommentFormat,

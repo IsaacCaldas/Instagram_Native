@@ -15,11 +15,12 @@ export default function AuthProvider({ children }) {
 
   useEffect(() => getUserFromStorage(), [])
 
-  async function signUp(name, email, password) {
+  async function signUp(name, nickname, email, password) {
     await firebase.auth().createUserWithEmailAndPassword(email, password).then(async (value) => {
       let uid = value.user.uid
       await firebase.database().ref('users').child(uid).set({
         name,
+        nickname: nickname.toLowerCase(),
         email
       }).then(() => {
         inform('Your account has been registered')
@@ -30,7 +31,6 @@ export default function AuthProvider({ children }) {
         return false
       })
     }).catch((error) => {
-      console.log('CRIAR NO AUTH')
       handleErrors(error.code)
       return false
     })
@@ -45,6 +45,7 @@ export default function AuthProvider({ children }) {
           let data = {
             uid,
             name: snapshot.val().name,
+            nickname: snapshot.val().nickname,
             email: value.user.email
           }
           setUser(data)
@@ -56,7 +57,6 @@ export default function AuthProvider({ children }) {
         })
       setUser(value.user.uid)
     }).catch((error) => {
-      console.log('SIGN IN LOGIN ERROU HEIN')
       handleErrors(error.code)
       return false
     })
@@ -72,8 +72,6 @@ export default function AuthProvider({ children }) {
   function handleErrors(err_code) {
     switch (err_code) {
       case 'auth/email-already-in-use':
-        inform('Email already in use')
-        break
       case 'auth/invalid-email':
         inform('Email invalid')
         break

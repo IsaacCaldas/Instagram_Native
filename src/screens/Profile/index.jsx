@@ -1,5 +1,5 @@
-import { useState, useContext } from 'react'
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native'
+import { useContext } from 'react'
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
 import { Gravatar } from 'react-native-gravatar'
 
 import { AuthContext } from '../../context/auth'
@@ -7,10 +7,7 @@ import Sign from '../Auth/sign'
 
 export default function Profile() {
   const { signed, signOut, user } = useContext(AuthContext)
-
   const logout = async () => signOut()
-
-  console.log(user)
 
   return (
     <>
@@ -27,7 +24,7 @@ export default function Profile() {
                 style={styles.roundedProfileImage}
               />
               <View>
-                <Text style={styles.name}>{user.name}</Text>
+                <Text style={styles.name}>{user.nickname}</Text>
                 <Text style={styles.email}>{user.email}</Text>
               </View>
             </View>

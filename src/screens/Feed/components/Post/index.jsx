@@ -18,6 +18,8 @@ export default function Post({ data }) {
   const [likedPost, setLikedPost] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
 
+  console.log(data)
+
   useEffect(() => {
     handleFormat()
   }, [])
@@ -44,7 +46,7 @@ export default function Post({ data }) {
   return (
     <View style={styles.box}>
       <Header
-        author={data.author}
+        author={data.author.nickname}
         author_img={data.author_img}
         story_present={data.story_present}
         verified={data.verified}
@@ -56,7 +58,7 @@ export default function Post({ data }) {
         handleFormat={handleCommentFormat}
         setCommentFormat={setHandleCommentFormat}
         setModalVisible={setModalVisible}
-        author={data.author}
+        author={data.author.nickname}
         comments={data.comments}
         author_img={data.author_img}
       />
@@ -68,7 +70,7 @@ export default function Post({ data }) {
         setCommentFormat={setHandleCommentFormat}
         setModalVisible={setModalVisible}
         post_img={data.post_img} 
-        author={data.author}
+        author={data.author.nickname}
         comments={data.comments}
         author_comment={data.author_comment}
         author_img={data.author_img}

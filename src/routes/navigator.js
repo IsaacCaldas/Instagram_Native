@@ -4,9 +4,8 @@ import FA from 'react-native-vector-icons/FontAwesome'
 import Foundation from 'react-native-vector-icons/Foundation';
 
 import Feed from '../screens/Feed'
-import AddPhoto from '../screens/AddPhoto'
+import AddPost from '../screens/AddPost'
 import Profile from '../screens/Profile'
-import Sign from '../screens/Auth/sign'
 
 const Tab = createBottomTabNavigator()
 
@@ -35,10 +34,10 @@ export default function TabsNavigator() {
         }}
       />
       <Tab.Screen
-        name="AddPhoto"
-        component={AddPhoto}
+        name="AddPost"
+        component={AddPost}
         options={{
-          tabBarLabel: 'Add Photo',
+          tabBarLabel: 'Add Post',
           tabBarIcon: () => <FA name="camera" color="#111" size={30} />
         }}
       />
