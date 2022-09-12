@@ -74,7 +74,7 @@ export default function CommentsArea({
                 placeholder="Add a comment..."
               />
               <TouchableOpacity onPress={() => AddNewComment()} style={styles.btnSend}>
-                <Text style={{ marginLeft: 5 }}>Send</Text>
+                <Text style={{ color: '#fff', marginLeft: 5 }}>Send</Text>
               </TouchableOpacity>
             </View>
           }
@@ -112,10 +112,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#777'
   },
   btnSend: {
-    width: 50,
-    height: 20,
+    width: 60,
+    height: 30,
+    padding: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '##a33573'
+    backgroundColor: '#a33573',
+    borderRadius: 10
   }
 })
