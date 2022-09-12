@@ -19,7 +19,7 @@ export default function AddPost() {
   const { signed, user } = useContext(AuthContext)
 
   const [file, setFile] = useState(null)
-  const [comment, setComment] = useState(null)
+  const [comment, setComment] = useState('')
   const [modalIsVisible, setModalVisibility] = useState(false)
 
   const openCamera = async () => {
@@ -48,6 +48,8 @@ export default function AddPost() {
     setModalVisibility(false)
     !image.cancelled && setFile(image.uri)
   }
+
+  
 
   async function save() {
     let new_post = await firebase.database().ref('posts')

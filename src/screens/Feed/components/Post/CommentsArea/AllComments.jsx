@@ -14,8 +14,6 @@ export default function AllComments({
   post_id, author_id, fetchComments
 }) {
 
-  console.log('HOU HOU HOU', comments)
-
   return (
     <View style={styles.box}>
       <Modal

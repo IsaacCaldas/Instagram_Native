@@ -11,9 +11,6 @@ export default function CommentsArea({
   isModal, author_comment, post_id, fetchComments
 }) {
 
-
-  // console.log('HOU HOU HOU', comments)
-
   const { user } = useContext(AuthContext)
 
   const [newComment, setNewComment] = useState('')
