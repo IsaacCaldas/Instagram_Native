@@ -23,7 +23,7 @@ export default function Feed() {
           author_img: post.val().author_img,
           post_img: post.val().post_img,
           author_comment: post.val().author_comment,
-          comments: post.val().comments,
+          comments_counter: post.val().comments_counter,
           verified: post.val().verified,
           story_present: post.val().story_present,
           auto_liked: post.val().auto_liked,

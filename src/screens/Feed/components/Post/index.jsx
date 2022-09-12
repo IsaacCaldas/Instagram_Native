@@ -8,9 +8,13 @@ import Actions from './Actions'
 import CommentsArea from './CommentsArea'
 import AllComments from './CommentsArea/AllComments'
 
+import firebase from '../../../../utils/firebase_conn'
+
 //icons
 
 export default function Post({ data }) {
+
+  const [comments, setComments] = useState([])
 
   const [principalCommentFormated, setFormatedComment] = useState('')
   const [commentFormated, setCommentFormated] = useState('')
@@ -18,9 +22,8 @@ export default function Post({ data }) {
   const [likedPost, setLikedPost] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
 
-  console.log(data)
-
   useEffect(() => {
+    fetchComments()
     handleFormat()
   }, [])
 
@@ -43,6 +46,21 @@ export default function Post({ data }) {
     }
   }
 
+  async function fetchComments(post_id) {
+    await firebase.database().ref('comments').child(post_id || data.id).on('value', (snapshot) => {
+      let comments_ = []
+      snapshot?.forEach(comment => {
+        comments_.push({
+          id: comment.key,
+          nickname: comment.val().nickname,
+          comment: comment.val().comment
+        })
+      })
+      setComments(comments_)
+    })
+  }
+
+
   return (
     <View style={styles.box}>
       <Header
@@ -59,7 +77,7 @@ export default function Post({ data }) {
         setCommentFormat={setHandleCommentFormat}
         setModalVisible={setModalVisible}
         author={data.author.nickname}
-        comments={data.comments}
+        comments_counter={data.comments_counter}
         author_img={data.author_img}
       />
       <AllComments 
@@ -71,9 +89,13 @@ export default function Post({ data }) {
         setModalVisible={setModalVisible}
         post_img={data.post_img} 
         author={data.author.nickname}
-        comments={data.comments}
+        comments={comments}
+        comments_counter={data.comments_counter}
         author_comment={data.author_comment}
         author_img={data.author_img}
+        post_id={data.id}
+        author_id={data.author.uid}
+        fetchComments={fetchComments}
       />
     </View>
   )

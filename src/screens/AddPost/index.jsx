@@ -58,10 +58,7 @@ export default function AddPost() {
       author_img: 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
       post_img: file,
       author_comment: comment,
-      comments: {
-        comments_counter: 0,
-        // comments_on_post: []
-      },
+      comments_counter: 0,
       verified: false,
       story_present: false,
       auto_liked: false,

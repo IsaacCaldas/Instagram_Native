@@ -10,8 +10,11 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome'
 export default function AllComments({
   setVisible, visible, author_comment,
   principalComment, handleFormat, setCommentFormat,
-  post_img, author, comments, author_img
+  post_img, author, comments, comments_counter, author_img, 
+  post_id, author_id, fetchComments
 }) {
+
+  console.log('HOU HOU HOU', comments)
 
   return (
     <View style={styles.box}>
@@ -37,8 +40,12 @@ export default function AllComments({
               setModalVisible={setVisible}
               author={author}
               comments={comments}
+              comments_counter={comments_counter}
               author_img={author_img}
               author_comment={author_comment}
+              post_id={post_id}
+              author_id={author_id}
+              fetchComments={fetchComments}
             />
           </View>
         </ScrollView>
